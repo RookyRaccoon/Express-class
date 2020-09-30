@@ -23,6 +23,16 @@ app.get('/', (req, res) => {
 })
 
 
+app.get('/gen-session/:id', (req, res)=> {
+    const {id} = req.params
+    req.session.userId = id
+    res.send(id)
+})
+
+app.get('/session', (req, res)=> {
+    res.send(req.session.userId)
+})
+
 const userRoute = require('./routes/user.route.js')
 app.use('/api/user', userRoute)
 

@@ -20,6 +20,26 @@ router.use((req, res, next) => {
     next()
 })
 
+router.get('/me', (req, res) => {
+
+    if (typeof req.session.userId != 'number'){
+        res.status(401)
+        res.send({
+            message : 'User not authenticated'
+        })
+        return
+    }
+    const user = users.find( u => u.id === req.session.userId)
+    if(user){
+        delete user.password
+        res.json(user)
+    }
+    res.status(500)
+    //erreur serveur pas user
+    res.send({message : 'Server error'})
+   
+})
+
 router.get('/:userId', (req, res) =>{
     console.log('userId', req.params.userId, typeof req.params.userId)
     const user = users.find(u => u.id === parseInt(req.params.userId))
@@ -34,6 +54,7 @@ router.get('/:userId', (req, res) =>{
     res.json(user)
 })
 
+
 router.post('/login', (req, res) => {
     const { username, password } = req.body
     console.log('req body', req.body)
@@ -47,8 +68,9 @@ router.post('/login', (req, res) => {
         res.json({ message: 'did not find the user' })
         return
     }
+    //connecter l'utilisateur
+    req.session.userId = user.id
     res.json({ message: 'ok' })
-    
 
 })
 
